@@ -1,9 +1,12 @@
 import os
-from crewai import Agent, Task, Crew, LLM
+from crewai import Agent, Task, Crew
+from langchain_groq import ChatGroq
 
-# 1. Initialize the ultra-fast, free Groq LLM
-# We use Llama 3.3 70B because of its elite coding and reasoning performance
-groq_llm = LLM(model="groq/llama-3.3-70b-versatile")
+# 1. Initialize the LLM using the official LangChain wrapper to bypass the cache bug
+groq_llm = ChatGroq(
+    api_key=os.environ.get("GROQ_API_KEY"),
+    model_name="llama-3.3-70b-versatile"
+)
 
 # --- 2. Define the Agents ---
 
@@ -33,8 +36,6 @@ architect = Agent(
 
 # --- 3. Define the Tasks ---
 
-# Simulate reading a file from the repository
-# (In a production environment, you would use Python's os/sys modules to read all modified files)
 try:
     with open('calculator.py', 'r') as file:
         code_to_analyze = file.read()
@@ -42,7 +43,7 @@ except FileNotFoundError:
     code_to_analyze = """
 def divide_numbers(a, b):
     return a / b
-""" # Fallback code if the file is missing
+""" 
 
 review_task = Task(
     description=f"Review the following code for bugs (like division by zero) and security flaws:\n\n{code_to_analyze}",
@@ -70,7 +71,6 @@ virtual_team = Crew(
     verbose=True
 )
 
-# Kick off the workflow!
 print("Starting the Virtual Engineering Team analysis...")
 result = virtual_team.kickoff()
 

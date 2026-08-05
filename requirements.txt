@@ -1,3 +1,2 @@
 crewai
-crewai[litellm]
-groq
+langchain-groq
