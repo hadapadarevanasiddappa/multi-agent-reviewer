@@ -79,4 +79,13 @@ result = virtual_team.kickoff()
 print("\n==============================================")
 print("FINAL AI TEAM REPORT:")
 print("==============================================")
-print(result.raw)
+# Kick off the workflow!
+print("Starting the Virtual Engineering Team analysis...")
+result = virtual_team.kickoff()
+
+# Save the report to a file named report.md
+with open("report.md", "w") as f:
+    f.write("## 🤖 AI Engineering Team Report\n\n")
+    f.write(result.raw)
+
+print("Report successfully saved to report.md!")

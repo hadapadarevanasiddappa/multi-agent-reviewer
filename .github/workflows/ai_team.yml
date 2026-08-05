@@ -1,15 +1,18 @@
 name: Virtual AI Engineering Team
 
 on:
-  push:
+  pull_request: # Trigger only when a PR is created or updated
     branches:
       - main
     paths:
-      - '**.py' # Only trigger the AI if Python files were changed
+      - '**.py'
 
 jobs:
   run-ai-agents:
     runs-on: ubuntu-latest
+    # Give the pipeline permission to write comments
+    permissions:
+      pull-requests: write 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -24,8 +27,14 @@ jobs:
           pip install -r requirements.txt
           
       - name: Run AI Agent Team
-        # This securely pulls the free API key you saved in the repository settings
         env:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           python agent_team.py
+
+      - name: Post PR Comment
+        # GITHUB_TOKEN is automatically provided by GitHub, you do NOT need to create it!
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --body-file report.md
