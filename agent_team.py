@@ -1,12 +1,14 @@
 import os
-from crewai import Agent, Task, Crew
-from langchain_groq import ChatGroq
+from crewai import Agent, Task, Crew, LLM
 
-# 1. Initialize the LLM using the official LangChain wrapper to bypass the cache bug
-groq_llm = ChatGroq(
-    api_key=os.environ.get("GROQ_API_KEY"),
-    model_name="llama-3.3-70b-versatile"
-)
+# --- MONKEY PATCH FOR CREWAI GROQ BUG ---
+# This disables the broken Anthropic cache feature so Groq doesn't crash
+import crewai.llms.cache as _crewai_cache
+_crewai_cache.mark_cache_breakpoint = lambda msg: msg
+# ----------------------------------------
+
+# 1. Initialize the ultra-fast, free Groq LLM using CrewAI's native class
+groq_llm = LLM(model="groq/llama-3.3-70b-versatile")
 
 # --- 2. Define the Agents ---
 
